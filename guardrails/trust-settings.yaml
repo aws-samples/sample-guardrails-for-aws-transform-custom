@@ -1,0 +1,59 @@
+# Minimal trust allowlist for running AWS/java-version-upgrade on this
+# repository with AWS Transform custom, WITHOUT --trust-all-tools.
+#
+# Derived empirically: a discovery run with no trust file raised 23 approval
+# prompts on this 4-file application. With this file in place, a full run of
+# AWS/java-version-upgrade completed with ZERO prompts: 43 tool invocations
+# (13 shell, 11 file_write, 11 file_read, 6 editor, 2 vcs_control) all ran
+# trusted, and the build passed 2/2 tests. Verified on ATX CLI 3.10.0; the
+# discovery run used 3.9.0.
+#
+# Command shapes vary between runs (the agent sometimes prefixes `cd <path> &&`),
+# which is why the patterns below cover both bare and cd-prefixed forms. If a
+# run does raise a prompt, the prompt text names the command that did not match,
+# and adding that shape here closes it.
+#
+# Install: copy to ~/.aws/atx/trust-settings.yaml
+#
+# SECURITY CAVEAT: trustedShellCommands patterns are full-command-string
+# globs, and a trailing wildcard spans shell operators. "mvn *" also trusts
+# "mvn --version; <anything>". Keep patterns as narrow as your runs allow.
+#
+# SCOPE CAVEAT: this file governs INTERACTIVE runs only. Non-interactive
+# mode (-x) requires --trust-all-tools and does not consult this file; the
+# security boundary for CI is the execution role's IAM scope and spend
+# limits, not trust settings.
+
+trustedTools:
+  - editor
+  - file_write
+  - vcs_control
+
+trustedShellCommands:
+  - "mvn *"
+  - "JAVA_HOME=* mvn *"
+  - "cd * && mvn *"
+  - "cd * && JAVA_HOME=* mvn *"
+  - "git log *"
+  - "git status"
+  - "git diff *"
+  - "cd * && git *"
+  - "java -version*"
+  - "/usr/libexec/java_home *"
+  - "ls /Library/Java/JavaVirtualMachines*"
+  - "cd * && ls /Library/Java/JavaVirtualMachines*"
+  - "test -f *"
+
+# Command shapes that require approval in interactive mode unless the ENTIRE
+# command already matches trustedShellCommands. ATX 3.10.0 checks the trusted
+# full-command patterns first; keep these lists non-overlapping, because a broad
+# trusted pattern (for example "mvn *") can otherwise override an always-prompt
+# match in a chained sub-command. When no trusted full-string match exists,
+# these patterns are checked against each sub-command in a compound expression;
+# -t and session trust do not override them. They are NOT enforced in
+# non-interactive mode (-x). Verified from the installed 3.10.0 implementation
+# and its 1.10.0 changelog on 2026-09-05.
+alwaysPromptCommands:
+  - "rm -rf *"
+  - "sudo *"
+  - "find * -exec *"

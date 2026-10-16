@@ -1,0 +1,10 @@
+.git
+target
+*.pptx
+fallback
+scripts
+docs
+*.md
+.java-version
+.DS_Store
+infra

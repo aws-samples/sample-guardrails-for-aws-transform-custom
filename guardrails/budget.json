@@ -1,0 +1,12 @@
+{
+  "BudgetName": "aws-transform-monthly",
+  "BudgetLimit": {
+    "Amount": "50",
+    "Unit": "USD"
+  },
+  "CostFilters": {
+    "Service": ["AWS Transform"]
+  },
+  "TimeUnit": "MONTHLY",
+  "BudgetType": "COST"
+}
