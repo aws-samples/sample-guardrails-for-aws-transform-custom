@@ -1,0 +1,29 @@
+target/
+build/
+*.class
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# keep decks out of the demo repo
+*.pptx
+
+# CDK
+infra/node_modules/
+infra/cdk.out/
+infra/dist/
+infra/cdk.context.json
+
+# Python environment for the document tooling (never published)
+.venv/
+__pycache__/
+*.pyc
+
+# Internal blog working material (never published)
+BLOG-AGENT-PROMPT.md
+REVIEW-AGENT-PROMPT.md
+.claude/
+.kiro/
+blog/*.pdf
+blog/*.docx
